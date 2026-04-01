@@ -1,0 +1,47 @@
+import pandas as pd
+import joblib
+
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+
+# 1. Load dataset (file name change karo agar different hai)
+data = pd.read_csv("data.csv")
+
+# 2. Convert categorical column (IMPORTANT)
+if 'type' in data.columns:
+    data['type'] = data['type'].map({
+        'PAYMENT': 0,
+        'TRANSFER': 1,
+        'CASH_OUT': 2,
+        'DEBIT': 3,
+        'CASH_IN': 4
+    })
+
+# 3. Check target column
+if 'isFraud' not in data.columns:
+    raise Exception("❌ 'isFraud' column not found in dataset")
+
+# 4. Features & target
+X = data.drop("isFraud", axis=1)
+y = data["isFraud"]
+
+# 5. Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 6. Create pipeline (scaler + model)
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", RandomForestClassifier(n_estimators=100, random_state=42))
+])
+
+# 7. Train model
+pipeline.fit(X_train, y_train)
+
+# 8. Save model
+joblib.dump(pipeline, "model.pkl")
+
+print("✅ model.pkl successfully created!")

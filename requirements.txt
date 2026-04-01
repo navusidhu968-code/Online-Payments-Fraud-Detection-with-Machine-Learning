@@ -6,6 +6,4 @@ imbalanced-learn
 matplotlib
 seaborn
 scipy
-tensorflow
-tabulate
 joblib
